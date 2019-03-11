@@ -1,6 +1,7 @@
 # coding = utf-8
 
 import os
+import time
 import paramiko
 
 
@@ -48,7 +49,7 @@ def getpid():
 
 # ssh = SSHHelper("10.169.3.7", "22", "root", "root234")
 # print(ssh.do_command("pwd"))
-#os.chdir("/home/luzq/gopath/sanbao/src/apivideo")
+# os.chdir("/home/luzq/gopath/sanbao/src/apivideo")
 
 # 远程服务器信息
 ip = "10.169.3.7"
@@ -69,7 +70,11 @@ if yon != "y" and yon != "Y":
 
 print("开始构建程序")
 try:
-    output = os.popen("go build")
+    #编译需要时间 os.system是阻塞的所以没问题
+    os.system("go build")
+    #os.popen是非阻塞的 除非调用output.read() 才会阻塞 所以,如果不调用 output.read() 会出现上传的程序不是最新编译的情况
+    # output = os.popen("go build")
+    # print(output.read())
 except Exception as e:
     print(e)
     exit(100)
@@ -92,6 +97,7 @@ except Exception as e:
     print("文件传输失败")
     print(e)
     exit(200)
+
 print("程序上传成功")
 
 print("开始启动程序")
@@ -99,6 +105,7 @@ print("开始启动程序")
 pid, ok = getpid()
 if ok:
     ssh.do_command("kill -9 %s" % (pid))
+    time.sleep(2)
 
 ssh.do_command("cd %s" % (apppath) + ";" + "nohup ./%s >/dev/null 2>&1 &" % (appname))
 
