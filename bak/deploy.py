@@ -105,7 +105,7 @@ print("开始启动程序")
 pid, ok = getpid()
 if ok:
     ssh.do_command("kill -9 %s" % (pid))
-    time.sleep(2)
+time.sleep(3)
 
 ssh.do_command("cd %s" % (apppath) + ";" + "nohup ./%s >/dev/null 2>&1 &" % (appname))
 
